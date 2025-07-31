@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "智能文本助手",
+  "version": "1.0.0",
+  "description": "提供文本解释、翻译、朗读和润色功能的Chrome插件",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tts",
+    "scripting"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/content.js"],
+      "css": ["css/styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "html/popup.html",
+    "default_title": "智能文本助手"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["html/mindmap-x6.html", "js/mindmap-x6.js", "html/settings.html", "js/settings.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+} 

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能文本助手 - 设置</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #4A90E2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        
+        .header .subtitle {
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #4A90E2;
+            padding-bottom: 8px;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-label {
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .setting-description {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: #4A90E2;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: #4A90E2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #357ABD;
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e5e5;
+        }
+        
+        .status-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .status-success {
+            background: #E8F5E8;
+            color: #2E7D32;
+            border: 1px solid #A5D6A7;
+        }
+        
+        .status-error {
+            background: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #EF9A9A;
+        }
+        
+        .footer {
+            background: #f9f9f9;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer-text {
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>智能文本助手</h1>
+            <p class="subtitle">插件设置</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2 class="section-title">基本设置</h2>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">启用插件</div>
+                        <div class="setting-description">开启或关闭插件功能</div>
+                    </div>
+                    <div class="toggle-switch active" id="enableToggle"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">自动隐藏</div>
+                        <div class="setting-description">选中文本后自动隐藏工具栏</div>
+                    </div>
+                    <div class="toggle-switch active" id="autoHideToggle"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">显示图标</div>
+                        <div class="setting-description">在工具栏中显示功能图标</div>
+                    </div>
+                    <div class="toggle-switch active" id="showIconsToggle"></div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">API 配置</h2>
+                
+                <div class="input-group">
+                    <label class="input-label">API Key</label>
+                    <input type="password" class="input-field" id="apiKey" placeholder="请输入您的 API Key">
+                    <div class="setting-description">用于访问 AI 服务的 API 密钥</div>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">API 端点</label>
+                    <input type="url" class="input-field" id="apiEndpoint" placeholder="https://api.moonshot.cn/v1/chat/completions">
+                    <div class="setting-description">AI 服务的 API 地址</div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" id="testApi">测试连接</button>
+                    <button class="btn btn-secondary" id="saveSettings">保存设置</button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">功能设置</h2>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">文本解释</div>
+                        <div class="setting-description">启用文本解释功能</div>
+                    </div>
+                    <div class="toggle-switch active" id="explainToggle"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">翻译功能</div>
+                        <div class="setting-description">启用中英文翻译功能</div>
+                    </div>
+                    <div class="toggle-switch active" id="translateToggle"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">文本朗读</div>
+                        <div class="setting-description">启用文本朗读功能</div>
+                    </div>
+                    <div class="toggle-switch active" id="ttsToggle"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">文本润色</div>
+                        <div class="setting-description">启用文本润色功能</div>
+                    </div>
+                    <div class="toggle-switch active" id="polishToggle"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">网页总结</div>
+                        <div class="setting-description">启用网页总结功能</div>
+                    </div>
+                    <div class="toggle-switch active" id="summaryToggle"></div>
+                </div>
+            </div>
+            
+            <div id="statusMessage"></div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-text">版本 1.0.0 | 智能文本助手</div>
+        </div>
+    </div>
+
+    <script src="../js/settings.js"></script>
+</body>
+</html> 

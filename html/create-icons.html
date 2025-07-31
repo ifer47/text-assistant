@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建插件图标</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .preview {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .icon-display {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .icon-display canvas {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        .download-all {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .download-all:hover {
+            background: #357ABD;
+        }
+        .instructions {
+            background: #E8F4FD;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #2E5C8A;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>智能文本助手 - 图标生成器</h1>
+        
+        <div class="instructions">
+            <h3>操作步骤：</h3>
+            <ol>
+                <li>点击下方的"生成并下载所有图标"按钮</li>
+                <li>将下载的三个图标文件移动到项目的 <code>icons</code> 目录中</li>
+                <li>在 Chrome 扩展管理页面重新加载插件</li>
+                <li>图标应该会更新为显示"智"字的蓝色圆形图标</li>
+            </ol>
+        </div>
+
+        <div class="preview">
+            <h3>图标预览：</h3>
+            <div class="icon-display">
+                <canvas id="canvas16" width="16" height="16"></canvas>
+                <div>16x16</div>
+            </div>
+            <div class="icon-display">
+                <canvas id="canvas48" width="48" height="48"></canvas>
+                <div>48x48</div>
+            </div>
+            <div class="icon-display">
+                <canvas id="canvas128" width="128" height="128"></canvas>
+                <div>128x128</div>
+            </div>
+        </div>
+
+        <button class="download-all" onclick="generateAllIcons()">生成并下载所有图标</button>
+    </div>
+
+    <script>
+        // 绘制图标的函数
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            
+            // 清空画布
+            ctx.clearRect(0, 0, size, size);
+            
+            // 计算缩放比例
+            const scale = size / 128;
+            ctx.scale(scale, scale);
+            
+            // 绘制背景圆形
+            ctx.beginPath();
+            ctx.arc(64, 64, 60, 0, 2 * Math.PI);
+            ctx.fillStyle = '#4A90E2';
+            ctx.fill();
+            ctx.strokeStyle = '#2E5C8A';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // 绘制装饰性边框
+            ctx.beginPath();
+            ctx.arc(64, 64, 50, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 根据图标尺寸调整字体大小 - 小尺寸图标使用更大比例
+            let fontSize;
+            if (size <= 16) {
+                fontSize = 18; // 16x16 图标使用更大字体，几乎占满整个空间
+            } else if (size <= 48) {
+                fontSize = 42; // 48x48 图标使用更大字体
+            } else {
+                fontSize = 72; // 128x128 图标使用更大字体
+            }
+            
+            // 绘制"智"字 - 确保完全居中，调整垂直位置
+            ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            // 微调垂直位置，确保视觉上的完全居中
+            ctx.fillText('智', 64, 62);
+            
+            // 重置变换
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+        }
+        
+        // 下载单个图标
+        function downloadIcon(size) {
+            const canvas = document.getElementById(`canvas${size}`);
+            const link = document.createElement('a');
+            link.download = `icon${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // 生成并下载所有图标
+        function generateAllIcons() {
+            // 先绘制所有图标
+            drawIcon(document.getElementById('canvas16'), 16);
+            drawIcon(document.getElementById('canvas48'), 48);
+            drawIcon(document.getElementById('canvas128'), 128);
+            
+            // 延迟下载，确保绘制完成
+            setTimeout(() => {
+                downloadIcon(16);
+                setTimeout(() => downloadIcon(48), 100);
+                setTimeout(() => downloadIcon(128), 200);
+            }, 100);
+        }
+        
+        // 页面加载完成后绘制预览
+        window.addEventListener('load', function() {
+            drawIcon(document.getElementById('canvas16'), 16);
+            drawIcon(document.getElementById('canvas48'), 48);
+            drawIcon(document.getElementById('canvas128'), 128);
+        });
+    </script>
+</body>
+</html> 

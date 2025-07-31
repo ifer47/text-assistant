@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成插件图标</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .icon-preview {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .icon-item {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .icon-item canvas {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .download-btn {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .download-btn:hover {
+            background: #357ABD;
+        }
+        .instructions {
+            background: #E8F4FD;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4A90E2;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #2E5C8A;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>智能文本助手 - 图标生成器</h1>
+        
+        <div class="instructions">
+            <h3>使用说明：</h3>
+            <ol>
+                <li>点击下方的"下载"按钮下载对应尺寸的图标</li>
+                <li>将下载的图标文件重命名为对应的文件名</li>
+                <li>将图标文件放入项目的 <code>icons</code> 目录中</li>
+                <li>确保文件名与 manifest.json 中的配置一致</li>
+            </ol>
+        </div>
+
+        <div class="icon-preview">
+            <div class="icon-item">
+                <h3>16x16 图标</h3>
+                <canvas id="canvas16" width="16" height="16"></canvas>
+                <br>
+                <button class="download-btn" onclick="downloadIcon(16)">下载 icon16.png</button>
+            </div>
+            
+            <div class="icon-item">
+                <h3>48x48 图标</h3>
+                <canvas id="canvas48" width="48" height="48"></canvas>
+                <br>
+                <button class="download-btn" onclick="downloadIcon(48)">下载 icon48.png</button>
+            </div>
+            
+            <div class="icon-item">
+                <h3>128x128 图标</h3>
+                <canvas id="canvas128" width="128" height="128"></canvas>
+                <br>
+                <button class="download-btn" onclick="downloadIcon(128)">下载 icon128.png</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 绘制图标的函数
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            
+            // 清空画布
+            ctx.clearRect(0, 0, size, size);
+            
+            // 计算缩放比例
+            const scale = size / 128;
+            ctx.scale(scale, scale);
+            
+            // 绘制背景圆形
+            ctx.beginPath();
+            ctx.arc(64, 64, 60, 0, 2 * Math.PI);
+            ctx.fillStyle = '#4A90E2';
+            ctx.fill();
+            ctx.strokeStyle = '#2E5C8A';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // 绘制装饰性边框
+            ctx.beginPath();
+            ctx.arc(64, 64, 50, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制"智"字
+            ctx.font = 'bold 48px Arial, sans-serif';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('智', 64, 64);
+            
+            // 重置变换
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+        }
+        
+        // 下载图标的函数
+        function downloadIcon(size) {
+            const canvas = document.getElementById(`canvas${size}`);
+            const link = document.createElement('a');
+            link.download = `icon${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // 页面加载完成后绘制所有图标
+        window.addEventListener('load', function() {
+            drawIcon(document.getElementById('canvas16'), 16);
+            drawIcon(document.getElementById('canvas48'), 48);
+            drawIcon(document.getElementById('canvas128'), 128);
+        });
+    </script>
+</body>
+</html> 

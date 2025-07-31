@@ -1,0 +1,353 @@
+/* 智能文本助手 Chrome 插件样式 */
+
+/* 重置样式 */
+.text-assistant * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 主悬浮框样式 */
+.text-assistant {
+  position: fixed;
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* 悬浮框容器 */
+.text-assistant-floating {
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 280px;
+  height: 40px;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* 功能按钮样式 */
+.text-assistant-btn {
+  background: #F5F5F5;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  height: 32px;
+  white-space: nowrap;
+}
+
+.text-assistant-btn:hover {
+  background: #F0F8FF;
+  color: #4A90E2;
+}
+
+.text-assistant-btn.active {
+  background: #4A90E2;
+  color: #FFFFFF;
+}
+
+.text-assistant-btn:disabled {
+  background: #CCCCCC;
+  color: #999999;
+  cursor: not-allowed;
+}
+
+/* 按钮图标 */
+.text-assistant-btn-icon {
+  font-size: 14px;
+}
+
+/* 下拉箭头 */
+.text-assistant-dropdown-arrow {
+  font-size: 10px;
+  margin-left: 2px;
+}
+
+/* 语言选择下拉菜单 */
+.text-assistant-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  z-index: 10003;
+  animation: slideDown 0.2s ease-in-out;
+}
+
+.text-assistant-dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.text-assistant-dropdown-item:hover {
+  background: #F0F8FF;
+}
+
+/* 结果面板样式 */
+.text-assistant-result {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 420px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 10001;
+  animation: slideDown 0.3s ease-in-out;
+  margin-top: 8px;
+}
+
+/* 结果面板标题栏 */
+.text-assistant-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #E5E5E5;
+  background: #F5F5F5;
+  border-radius: 8px 8px 0 0;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.text-assistant-result-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #999999;
+  padding: 2px;
+  border-radius: 2px;
+  transition: color 0.15s ease;
+}
+
+.text-assistant-result-close:hover {
+  color: #FF6B6B;
+}
+
+/* 结果内容区域 */
+.text-assistant-result-content {
+  padding: 12px;
+}
+
+/* 原文和译文标签 */
+.text-assistant-label {
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+/* 文本内容 */
+.text-assistant-text {
+  background: #F9F9F9;
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+/* 润色编辑区域 */
+.text-assistant-edit-area {
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  min-height: 80px;
+  resize: none; /* 禁用调整大小，保持宽度一致 */
+  font-family: inherit;
+  width: 100%; /* 确保宽度与父容器一致 */
+  box-sizing: border-box; /* 确保padding和border包含在宽度内 */
+}
+
+.text-assistant-edit-area:focus {
+  outline: none;
+  border-color: #4A90E2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* 操作按钮容器 */
+.text-assistant-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #E5E5E5;
+}
+
+/* 操作按钮 */
+.text-assistant-action-btn {
+  background: #4A90E2;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: center;
+}
+
+.text-assistant-action-btn:hover {
+  background: #357ABD;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-assistant-action-btn.secondary {
+  background: #F5F5F5;
+  color: #333333;
+  border: 1px solid #E5E5E5;
+}
+
+.text-assistant-action-btn.secondary:hover {
+  background: #E5E5E5;
+  border-color: #D5D5D5;
+}
+
+/* 翻译结果特殊样式 */
+.text-assistant-result[id*="translate"] .text-assistant-actions {
+  justify-content: space-between;
+}
+
+.text-assistant-result[id*="translate"] .text-assistant-action-btn:last-child {
+  background: #28A745;
+  color: white;
+}
+
+.text-assistant-result[id*="translate"] .text-assistant-action-btn:last-child:hover {
+  background: #218838;
+}
+
+/* 解释结果特殊样式 */
+.text-assistant-result[id*="explain"] .text-assistant-actions {
+  justify-content: space-between;
+}
+
+/* 加载状态 */
+.text-assistant-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #999999;
+}
+
+.text-assistant-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #E5E5E5;
+  border-top: 2px solid #4A90E2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+/* 错误状态 */
+.text-assistant-error {
+  color: #FF6B6B;
+  padding: 12px;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .text-assistant-result {
+    width: 90vw;
+    max-width: 300px;
+  }
+  
+  .text-assistant-floating {
+    min-width: 250px;
+  }
+  
+  .text-assistant-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+
+/* 无障碍设计 */
+.text-assistant-btn:focus,
+.text-assistant-action-btn:focus,
+.text-assistant-result-close:focus {
+  outline: 2px solid #4A90E2;
+  outline-offset: 2px;
+}
+
+/* 隐藏滚动条但保持功能 */
+.text-assistant-result::-webkit-scrollbar {
+  width: 6px;
+}
+
+.text-assistant-result::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 3px;
+}
+
+.text-assistant-result::-webkit-scrollbar-thumb {
+  background: #CCCCCC;
+  border-radius: 3px;
+}
+
+.text-assistant-result::-webkit-scrollbar-thumb:hover {
+  background: #999999;
+} 
