@@ -15,11 +15,8 @@ class SettingsManager {
     // 加载设置
     async loadSettings() {
         try {
-            const result = await chrome.storage.local.get(['isEnabled', 'settings']);
+            const result = await chrome.storage.local.get(['settings']);
             this.settings = {
-                isEnabled: true, // 默认启用插件
-                autoHide: true, // 默认启用自动隐藏
-                showIcons: true,
                 apiKey: '',
                 apiEndpoint: 'https://api.moonshot.cn/v1/chat/completions',
                 ...result.settings
@@ -27,9 +24,6 @@ class SettingsManager {
         } catch (error) {
             console.error('加载设置失败:', error);
             this.settings = {
-                isEnabled: true, // 默认启用插件
-                autoHide: true, // 默认启用自动隐藏
-                showIcons: true,
                 apiKey: '',
                 apiEndpoint: 'https://api.moonshot.cn/v1/chat/completions'
             };
@@ -38,21 +32,6 @@ class SettingsManager {
 
     // 绑定事件
     bindEvents() {
-        // 基本设置开关
-        document.getElementById('enableToggle').addEventListener('click', () => {
-            this.toggleSetting('isEnabled');
-        });
-
-        document.getElementById('autoHideToggle').addEventListener('click', () => {
-            this.toggleSetting('autoHide');
-        });
-
-        document.getElementById('showIconsToggle').addEventListener('click', () => {
-            this.toggleSetting('showIcons');
-        });
-
-
-
         // API 配置
         document.getElementById('apiKey').addEventListener('input', (e) => {
             this.settings.apiKey = e.target.value;
@@ -74,11 +53,6 @@ class SettingsManager {
 
     // 更新UI
     updateUI() {
-        // 更新基本设置开关
-        this.updateToggle('enableToggle', this.settings.isEnabled);
-        this.updateToggle('autoHideToggle', this.settings.autoHide);
-        this.updateToggle('showIconsToggle', this.settings.showIcons);
-
         // 更新输入框
         document.getElementById('apiKey').value = this.settings.apiKey || '';
         document.getElementById('apiEndpoint').value = this.settings.apiEndpoint || '';
@@ -107,7 +81,6 @@ class SettingsManager {
     async saveSettings() {
         try {
             await chrome.storage.local.set({
-                isEnabled: this.settings.isEnabled,
                 settings: this.settings
             });
             

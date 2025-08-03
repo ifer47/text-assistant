@@ -17,9 +17,8 @@ class PopupManager {
   // 加载设置
   async loadSettings() {
     try {
-      const result = await chrome.storage.local.get(['isEnabled', 'settings']);
+      const result = await chrome.storage.local.get(['settings']);
       this.settings = {
-        isEnabled: true, // 默认启用插件
         explainEnabled: true,
         translateEnabled: true,
         ttsEnabled: true,
@@ -30,7 +29,6 @@ class PopupManager {
     } catch (error) {
       console.error('加载设置失败:', error);
       this.settings = {
-        isEnabled: true,
         explainEnabled: true,
         translateEnabled: true,
         ttsEnabled: true,
@@ -97,13 +95,8 @@ class PopupManager {
     // 更新状态显示
     const statusElement = document.getElementById('status');
     if (statusElement) {
-      if (this.settings.isEnabled) {
-        statusElement.textContent = '已启用';
-        statusElement.className = 'status enabled';
-      } else {
-        statusElement.textContent = '已禁用';
-        statusElement.className = 'status';
-      }
+      statusElement.textContent = '已启用';
+      statusElement.className = 'status enabled';
     }
 
     // 更新功能开关状态
@@ -153,7 +146,6 @@ class PopupManager {
   async saveSettings() {
     try {
       await chrome.storage.local.set({
-        isEnabled: this.settings.isEnabled,
         settings: this.settings
       });
       

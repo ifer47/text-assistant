@@ -7,10 +7,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   
   // 设置默认配置
   chrome.storage.local.set({
-    isEnabled: true,
     settings: {
-      autoHide: true,
-      showIcons: true,
       language: 'zh'
     }
   });
@@ -26,10 +23,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({
         success: true,
         config: {
-          isEnabled: true,
           settings: {
-            autoHide: true,
-            showIcons: true,
             language: 'zh'
           }
         }
@@ -46,14 +40,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return true; // 保持消息通道开放
       
     case 'toggleEnabled':
-      // 切换插件启用状态
-      chrome.storage.local.get(['isEnabled'], (result) => {
-        const newState = !result.isEnabled;
-        chrome.storage.local.set({ isEnabled: newState }, () => {
-          sendResponse({ success: true, isEnabled: newState });
-        });
-      });
-      return true;
+      // 插件始终启用
+      sendResponse({ success: true, isEnabled: true });
+      break;
       
     default:
       sendResponse({ success: false, error: '未知的操作' });
@@ -63,17 +52,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // 处理标签页更新
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tab.url) {
-    // 检查是否应该在此页面启用插件
-    chrome.storage.local.get(['isEnabled'], (result) => {
-      if (result.isEnabled !== false) {
-        // 注入内容脚本
-        chrome.scripting.executeScript({
-          target: { tabId: tabId },
-          files: ['config.js', 'content.js']
-        }).catch((error) => {
-          console.log('脚本注入失败:', error);
-        });
-      }
+    // 插件始终启用，直接注入内容脚本
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ['config.js', 'content.js']
+    }).catch((error) => {
+      console.log('脚本注入失败:', error);
     });
   }
 });
