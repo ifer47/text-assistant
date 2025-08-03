@@ -74,13 +74,13 @@ class TextAssistant {
   }
 
   // 处理来自后台脚本的消息
-  handleMessage(request, sender, sendResponse) {
+  async handleMessage(request, sender, sendResponse) {
     console.log('收到消息:', request);
     
     switch (request.action) {
       case 'toggleEnabled':
         if (request.isEnabled) {
-          this.showFloating();
+          await this.showFloating();
         } else {
           this.hideFloating();
           this.hideAllResults();
@@ -102,13 +102,21 @@ class TextAssistant {
         });
         break;
         
+      case 'settingsUpdated':
+        // 设置已更新，如果有悬浮框则重新创建
+        if (this.floatingElement && this.selectedText) {
+          await this.showFloating();
+        }
+        sendResponse({ success: true });
+        break;
+        
       default:
         sendResponse({ success: false, error: '未知的操作' });
     }
   }
 
   // 处理文本选择
-  handleTextSelection(event) {
+  async handleTextSelection(event) {
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
     
@@ -121,7 +129,7 @@ class TextAssistant {
     // 如果选中的文本发生变化，更新悬浮框
     if (selectedText !== this.selectedText) {
       this.selectedText = selectedText;
-      this.showFloating(event);
+      await this.showFloating(event);
     }
   }
 
@@ -142,7 +150,7 @@ class TextAssistant {
   }
 
   // 显示悬浮框
-  showFloating(event) {
+  async showFloating(event) {
     console.log('显示悬浮框，事件:', event);
     console.log('当前选中文本:', this.selectedText);
     
@@ -154,7 +162,7 @@ class TextAssistant {
 
     // 创建悬浮框
     console.log('创建新的悬浮框');
-    this.floatingElement = this.createFloatingElement();
+    this.floatingElement = await this.createFloatingElement();
     document.body.appendChild(this.floatingElement);
     console.log('悬浮框已添加到页面:', this.floatingElement);
 
@@ -163,16 +171,28 @@ class TextAssistant {
   }
 
   // 创建悬浮框元素
-  createFloatingElement() {
+  async createFloatingElement() {
     const container = document.createElement('div');
     container.className = 'text-assistant';
-    container.innerHTML = `
-      <div class="text-assistant-floating">
+    
+    // 获取功能设置
+    const settings = await this.getSettings();
+    
+    // 构建按钮HTML
+    let buttonsHtml = '';
+    
+    if (settings.explainEnabled !== false) {
+      buttonsHtml += `
         <button class="text-assistant-btn" data-action="explain">
           <span class="text-assistant-btn-icon">🔍</span>
           解释
         </button>
-                 <div class="text-assistant-btn-container" style="position: relative; z-index: 10003;">
+      `;
+    }
+    
+    if (settings.translateEnabled !== false) {
+      buttonsHtml += `
+        <div class="text-assistant-btn-container" style="position: relative; z-index: 10003;">
           <button class="text-assistant-btn" data-action="translate">
             <span class="text-assistant-btn-icon">🌐</span>
             翻译
@@ -183,18 +203,39 @@ class TextAssistant {
             <div class="text-assistant-dropdown-item" data-lang="en">翻译为英文</div>
           </div>
         </div>
+      `;
+    }
+    
+    if (settings.ttsEnabled !== false) {
+      buttonsHtml += `
         <button class="text-assistant-btn" data-action="read">
           <span class="text-assistant-btn-icon">🔊</span>
           朗读
         </button>
+      `;
+    }
+    
+    if (settings.polishEnabled !== false) {
+      buttonsHtml += `
         <button class="text-assistant-btn" data-action="polish">
           <span class="text-assistant-btn-icon">✏️</span>
           润色
         </button>
+      `;
+    }
+    
+    if (settings.summaryEnabled !== false) {
+      buttonsHtml += `
         <button class="text-assistant-btn" data-action="summarize">
           <span class="text-assistant-btn-icon">📊</span>
           总结
         </button>
+      `;
+    }
+    
+    container.innerHTML = `
+      <div class="text-assistant-floating">
+        ${buttonsHtml}
       </div>
     `;
 
@@ -354,6 +395,12 @@ class TextAssistant {
   async handleExplain() {
     console.log('开始处理解释功能，选中文本:', this.selectedText);
     
+    // 检查功能是否启用
+    if (!await this.isFeatureEnabled('explainEnabled')) {
+      this.showToast('文本解释功能已禁用，请在插件设置中启用');
+      return;
+    }
+    
     // 先关闭所有其他结果弹框
     this.hideAllResults();
     
@@ -373,6 +420,12 @@ class TextAssistant {
   // 处理翻译功能
   async handleTranslate(targetLang) {
     console.log('开始处理翻译功能，选中文本:', this.selectedText, '目标语言:', targetLang);
+    
+    // 检查功能是否启用
+    if (!await this.isFeatureEnabled('translateEnabled')) {
+      this.showToast('翻译功能已禁用，请在插件设置中启用');
+      return;
+    }
     
     if (!this.selectedText || this.selectedText.trim() === '') {
       console.error('没有选中的文本');
@@ -400,7 +453,13 @@ class TextAssistant {
   }
 
   // 处理朗读功能
-  handleRead() {
+  async handleRead() {
+    // 检查功能是否启用
+    if (!await this.isFeatureEnabled('ttsEnabled')) {
+      this.showToast('文本朗读功能已禁用，请在插件设置中启用');
+      return;
+    }
+    
     if (this.isReading) {
       this.stopReading();
     } else {
@@ -463,6 +522,12 @@ class TextAssistant {
   async handlePolish() {
     console.log('开始处理润色功能，选中文本:', this.selectedText);
     
+    // 检查功能是否启用
+    if (!await this.isFeatureEnabled('polishEnabled')) {
+      this.showToast('文本润色功能已禁用，请在插件设置中启用');
+      return;
+    }
+    
     // 先关闭所有其他结果弹框
     this.hideAllResults();
     
@@ -482,6 +547,12 @@ class TextAssistant {
   // 处理总结功能
   async handleSummarize() {
     console.log('开始处理总结功能');
+    
+    // 检查功能是否启用
+    if (!await this.isFeatureEnabled('summaryEnabled')) {
+      this.showToast('网页总结功能已禁用，请在插件设置中启用');
+      return;
+    }
     
     // 获取当前页面内容
     const pageContent = this.getPageContent();
@@ -1001,6 +1072,41 @@ class TextAssistant {
     if (element && element.parentNode) {
       element.remove();
       delete this.resultElements[resultId];
+    }
+  }
+
+  // 获取设置
+  async getSettings() {
+    try {
+      const result = await chrome.storage.local.get(['settings']);
+      return result.settings || {
+        explainEnabled: true,
+        translateEnabled: true,
+        ttsEnabled: true,
+        polishEnabled: true,
+        summaryEnabled: true
+      };
+    } catch (error) {
+      console.error('获取设置失败:', error);
+      return {
+        explainEnabled: true,
+        translateEnabled: true,
+        ttsEnabled: true,
+        polishEnabled: true,
+        summaryEnabled: true
+      };
+    }
+  }
+
+  // 检查功能是否启用
+  async isFeatureEnabled(featureName) {
+    try {
+      const result = await chrome.storage.local.get(['settings']);
+      const settings = result.settings || {};
+      return settings[featureName] !== false; // 默认启用，除非明确设置为false
+    } catch (error) {
+      console.error('检查功能状态失败:', error);
+      return true; // 出错时默认启用
     }
   }
 

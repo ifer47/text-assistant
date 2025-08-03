@@ -3,13 +3,41 @@
 
 class PopupManager {
   constructor() {
+    this.settings = {};
     this.init();
   }
 
   // 初始化弹出窗口
-  init() {
+  async init() {
+    await this.loadSettings();
     this.bindEvents();
     this.updateUI();
+  }
+
+  // 加载设置
+  async loadSettings() {
+    try {
+      const result = await chrome.storage.local.get(['isEnabled', 'settings']);
+      this.settings = {
+        isEnabled: true, // 默认启用插件
+        explainEnabled: true,
+        translateEnabled: true,
+        ttsEnabled: true,
+        polishEnabled: true,
+        summaryEnabled: true,
+        ...result.settings
+      };
+    } catch (error) {
+      console.error('加载设置失败:', error);
+      this.settings = {
+        isEnabled: true,
+        explainEnabled: true,
+        translateEnabled: true,
+        ttsEnabled: true,
+        polishEnabled: true,
+        summaryEnabled: true
+      };
+    }
   }
 
   // 绑定事件
@@ -21,6 +49,47 @@ class PopupManager {
         this.openSettings();
       });
     }
+
+    // 功能开关按钮
+    const explainToggle = document.getElementById('explainToggle');
+    if (explainToggle) {
+      explainToggle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        this.toggleFeature('explainEnabled');
+      });
+    }
+
+    const translateToggle = document.getElementById('translateToggle');
+    if (translateToggle) {
+      translateToggle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        this.toggleFeature('translateEnabled');
+      });
+    }
+
+    const ttsToggle = document.getElementById('ttsToggle');
+    if (ttsToggle) {
+      ttsToggle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        this.toggleFeature('ttsEnabled');
+      });
+    }
+
+    const polishToggle = document.getElementById('polishToggle');
+    if (polishToggle) {
+      polishToggle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        this.toggleFeature('polishEnabled');
+      });
+    }
+
+    const summaryToggle = document.getElementById('summaryToggle');
+    if (summaryToggle) {
+      summaryToggle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        this.toggleFeature('summaryEnabled');
+      });
+    }
   }
 
   // 更新UI
@@ -28,8 +97,75 @@ class PopupManager {
     // 更新状态显示
     const statusElement = document.getElementById('status');
     if (statusElement) {
-      statusElement.textContent = '已启用';
-      statusElement.className = 'status enabled';
+      if (this.settings.isEnabled) {
+        statusElement.textContent = '已启用';
+        statusElement.className = 'status enabled';
+      } else {
+        statusElement.textContent = '已禁用';
+        statusElement.className = 'status';
+      }
+    }
+
+    // 更新功能开关状态
+    this.updateToggle('explainToggle', this.settings.explainEnabled);
+    this.updateToggle('translateToggle', this.settings.translateEnabled);
+    this.updateToggle('ttsToggle', this.settings.ttsEnabled);
+    this.updateToggle('polishToggle', this.settings.polishEnabled);
+    this.updateToggle('summaryToggle', this.settings.summaryEnabled);
+  }
+
+  // 更新开关状态
+  updateToggle(elementId, isActive) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      if (isActive) {
+        element.classList.add('active');
+      } else {
+        element.classList.remove('active');
+      }
+    }
+  }
+
+  // 切换功能
+  toggleFeature(featureName) {
+    // 立即更新设置和UI
+    this.settings[featureName] = !this.settings[featureName];
+    
+    // 根据功能名称获取正确的元素ID
+    const elementIdMap = {
+      explainEnabled: 'explainToggle',
+      translateEnabled: 'translateToggle',
+      ttsEnabled: 'ttsToggle',
+      polishEnabled: 'polishToggle',
+      summaryEnabled: 'summaryToggle'
+    };
+    
+    const elementId = elementIdMap[featureName];
+    this.updateToggle(elementId, this.settings[featureName]);
+    
+    // 异步保存设置（不阻塞UI更新）
+    this.saveSettings().catch(error => {
+      console.error('保存设置失败:', error);
+    });
+  }
+
+  // 保存设置
+  async saveSettings() {
+    try {
+      await chrome.storage.local.set({
+        isEnabled: this.settings.isEnabled,
+        settings: this.settings
+      });
+      
+      // 通知其他组件设置已更新
+      chrome.runtime.sendMessage({
+        action: 'settingsUpdated',
+        settings: this.settings
+      });
+      
+    } catch (error) {
+      console.error('保存设置失败:', error);
+      this.showMessage('保存设置失败', 'error');
     }
   }
 
@@ -89,13 +225,11 @@ class PopupManager {
 
 // 初始化弹出窗口
 document.addEventListener('DOMContentLoaded', () => {
-  new PopupManager();
+  window.popupManager = new PopupManager();
 });
 
 // 监听来自后台脚本的消息
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log('弹出窗口收到消息:', request);
-  
   switch (request.action) {
     case 'showMessage':
       // 显示消息
@@ -109,5 +243,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // 页面卸载时清理
 window.addEventListener('beforeunload', () => {
   // 清理资源
-  console.log('弹出窗口即将关闭');
 }); 
