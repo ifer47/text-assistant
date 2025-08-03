@@ -26,7 +26,6 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  min-width: 280px;
   height: 40px;
   animation: fadeIn 0.2s ease-in-out;
 }

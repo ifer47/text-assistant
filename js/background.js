@@ -55,7 +55,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // 插件始终启用，直接注入内容脚本
     chrome.scripting.executeScript({
       target: { tabId: tabId },
-      files: ['config.js', 'content.js']
+      files: ['content.js']
     }).catch((error) => {
       console.log('脚本注入失败:', error);
     });

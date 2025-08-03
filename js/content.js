@@ -41,10 +41,13 @@ class TextAssistant {
   // 加载配置
   async loadConfig() {
     try {
-      // 直接使用您配置的API Key
+      // 从Chrome存储中获取最新的设置
+      const result = await chrome.storage.local.get(['settings']);
+      const settings = result.settings || {};
+      
       this.config = {
-        KIMI_API_URL: "https://api.moonshot.cn/v1/chat/completions",
-        KIMI_API_KEY: "sk-1nGQ6z60vfBs7NxDZSVamBs4flEqmWuIKF0QkMeVvsZyBYjg",
+        KIMI_API_URL: settings.apiEndpoint || "https://api.moonshot.cn/v1/chat/completions",
+        KIMI_API_KEY: settings.apiKey || "",
         PROMPTS: {
           EXPLAIN: "请详细解释以下文本的含义和背景：",
           TRANSLATE_TO_CN: "请将以下英文文本翻译成中文，保持原意准确：",
@@ -54,14 +57,14 @@ class TextAssistant {
         }
       };
       
-      console.log('配置加载成功，API Key:', this.config.KIMI_API_KEY.substring(0, 10) + '...');
-      console.log('配置对象:', this.config);
+      console.log('配置加载成功，API Key:', this.config.KIMI_API_KEY ? this.config.KIMI_API_KEY.substring(0, 10) + '...' : '未设置');
+      console.log('API端点:', this.config.KIMI_API_URL);
     } catch (error) {
       console.error('配置加载失败:', error);
       // 使用默认配置
       this.config = {
         KIMI_API_URL: "https://api.moonshot.cn/v1/chat/completions",
-        KIMI_API_KEY: "your_kimi_api_key_here",
+        KIMI_API_KEY: "",
         PROMPTS: {
           EXPLAIN: "请详细解释以下文本的含义和背景：",
           TRANSLATE_TO_CN: "请将以下英文文本翻译成中文，保持原意准确：",
@@ -103,7 +106,11 @@ class TextAssistant {
         break;
         
       case 'settingsUpdated':
-        // 设置已更新，如果有悬浮框则重新创建
+        // 设置已更新，重新加载配置
+        await this.loadConfig();
+        console.log('设置已更新，配置已重新加载');
+        
+        // 如果有悬浮框则重新创建
         if (this.floatingElement && this.selectedText) {
           await this.showFloating();
         }
@@ -620,13 +627,16 @@ class TextAssistant {
 
   // 调用Kimi API
   async callKimiAPI(action, text, targetLang = null) {
+    // 每次调用API前都重新获取最新配置
+    await this.loadConfig();
+    
     if (!this.config) {
       throw new Error('配置未加载');
     }
     
     // 检查API Key是否已配置
-    if (!this.config.KIMI_API_KEY || this.config.KIMI_API_KEY === 'your_kimi_api_key_here' || this.config.KIMI_API_KEY.length < 10) {
-      throw new Error('请先在config.js中配置您的Kimi API Key');
+    if (!this.config.KIMI_API_KEY || this.config.KIMI_API_KEY.length < 10) {
+      throw new Error('请先在设置页面中配置您的API Key');
     }
     
     // 构建请求数据
@@ -703,12 +713,15 @@ class TextAssistant {
   // 测试API连接
   async testApiConnection() {
     try {
+      // 重新获取最新配置
+      await this.loadConfig();
+      
       if (!this.config) {
         return { success: false, error: '配置未加载' };
       }
       
-      if (!this.config.KIMI_API_KEY || this.config.KIMI_API_KEY === 'your_kimi_api_key_here' || this.config.KIMI_API_KEY.length < 10) {
-        return { success: false, error: '请先配置Kimi API Key' };
+      if (!this.config.KIMI_API_KEY || this.config.KIMI_API_KEY.length < 10) {
+        return { success: false, error: '请先在设置页面中配置您的API Key' };
       }
       
       // 发送测试请求
