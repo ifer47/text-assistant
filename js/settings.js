@@ -20,11 +20,6 @@ class SettingsManager {
                 isEnabled: true, // 默认启用插件
                 autoHide: true, // 默认启用自动隐藏
                 showIcons: true,
-                explainEnabled: true,
-                translateEnabled: true,
-                ttsEnabled: true,
-                polishEnabled: true,
-                summaryEnabled: true,
                 apiKey: '',
                 apiEndpoint: 'https://api.moonshot.cn/v1/chat/completions',
                 ...result.settings
@@ -35,11 +30,6 @@ class SettingsManager {
                 isEnabled: true, // 默认启用插件
                 autoHide: true, // 默认启用自动隐藏
                 showIcons: true,
-                explainEnabled: true,
-                translateEnabled: true,
-                ttsEnabled: true,
-                polishEnabled: true,
-                summaryEnabled: true,
                 apiKey: '',
                 apiEndpoint: 'https://api.moonshot.cn/v1/chat/completions'
             };
@@ -61,26 +51,7 @@ class SettingsManager {
             this.toggleSetting('showIcons');
         });
 
-        // 功能设置开关
-        document.getElementById('explainToggle').addEventListener('click', () => {
-            this.toggleSetting('explainEnabled');
-        });
 
-        document.getElementById('translateToggle').addEventListener('click', () => {
-            this.toggleSetting('translateEnabled');
-        });
-
-        document.getElementById('ttsToggle').addEventListener('click', () => {
-            this.toggleSetting('ttsEnabled');
-        });
-
-        document.getElementById('polishToggle').addEventListener('click', () => {
-            this.toggleSetting('polishEnabled');
-        });
-
-        document.getElementById('summaryToggle').addEventListener('click', () => {
-            this.toggleSetting('summaryEnabled');
-        });
 
         // API 配置
         document.getElementById('apiKey').addEventListener('input', (e) => {
@@ -107,13 +78,6 @@ class SettingsManager {
         this.updateToggle('enableToggle', this.settings.isEnabled);
         this.updateToggle('autoHideToggle', this.settings.autoHide);
         this.updateToggle('showIconsToggle', this.settings.showIcons);
-
-        // 更新功能设置开关
-        this.updateToggle('explainToggle', this.settings.explainEnabled);
-        this.updateToggle('translateToggle', this.settings.translateEnabled);
-        this.updateToggle('ttsToggle', this.settings.ttsEnabled);
-        this.updateToggle('polishToggle', this.settings.polishEnabled);
-        this.updateToggle('summaryToggle', this.settings.summaryEnabled);
 
         // 更新输入框
         document.getElementById('apiKey').value = this.settings.apiKey || '';
